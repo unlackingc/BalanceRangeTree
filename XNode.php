@@ -12,8 +12,8 @@ class XNode
 {
     public $uid;
 
-
-    /*    public $leftChild;
+        //本段代码由于激活自动补全，需在运行时删除
+        public $leftChild;
         public $rightChild;
         public $height;
         public $Ty;
@@ -21,8 +21,7 @@ class XNode
         public $parent;
         public $isLeft;
 
-        public $x;*/
-
+        public $x;
 
     public function __construct( $uid )
     {
@@ -57,6 +56,12 @@ class XNode
         */
     }
 
+
+    /**
+     * 根据父节点和给定数据生成并插入子节点
+     * @param Point $point
+     * @param XNode $_hot
+     */
     public function init( Point $point, XNode & $_hot )
     {
         $this->leftChild = null;
@@ -82,4 +87,6 @@ class XNode
             $_hot->rightChild = $point->uid;
         }
     }
+
+
 }

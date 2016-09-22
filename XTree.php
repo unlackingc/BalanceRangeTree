@@ -8,19 +8,36 @@
 
 require_once __DIR__ . '/XNode.php';
 require_once __DIR__ . '/Basic.php';
+require_once __DIR__ . '/BasicFunctionXTree.php';
 
 class XTree
 {
     public $root;
 
-    private function _search( Point $point, &$_hot )
+    private function _searchIn( XNode $v, Point &$point, XNode &$_hot  )
     {
+        if( $point->x == $v->x )
+        {
+            return $v;
+        }
 
+        $_hot = $v;
+        return $this->_searchIn( (($point->x < $v->x)? new XNode($v->leftChild) : new XNode($v->rightChild) ), $point, $_hot );
     }
 
+    private function _search( Point $point, XNode &$_hot )
+    {
+        return $this->_searchIn( new XNode($this->root), $point, $_hot );
+    }
+
+    /**
+     * 先调整x树的结构，再插入Y仍然无法避免对y树其他节点的调节和重构
+     * @param Point $point
+     * @return void|XNode
+     */
     public function insert( Point $point )
     {
-        $_hot = null;//父节点的uid
+        $_hot = new XNode("");//父节点的uid
         $x =  $this->_search( $point, $_hot );
         if( $x != null )
         {
@@ -30,13 +47,24 @@ class XTree
         $xNode = new XNode($point->uid);
         $xNode->init($point, $_hot);
 
-        for( $g = $_hot; $g != null;  )
+
+        //reBalance xTree
+        for( $g = $_hot; $g != null; $g = $g->parent  )
         {
-            $gNode = new XNode($g);
-            $gNode->read();
+            if( avlBalanced($g) == false )
+            {
+                FromParentTo($g) = rotateAt(tallerChild(tallerChild($g)));
+            }
+            else
+            {
+                updateHeight($g);
+            }
         }
 
 
+        //insert y
+
+        return $xNode;
     }
     /*
     template <typename T> BinNodePosi(T) AVL<T>::insert(const T& e) { //将关键码e插入AVL树中
